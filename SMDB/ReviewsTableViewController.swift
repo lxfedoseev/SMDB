@@ -81,13 +81,17 @@ extension ReviewsTableViewController: UISearchResultsUpdating {
     tableView.reloadData()
   }
 
-  func findMatches(_ searchText: String) {
-    var matches: Set<Review> = []
-    if let founds = ReviewsManager.instance.searchTerms[searchText.lowercased()] {
-      matches.formUnion(founds)
+    func findMatches(_ searchText: String) {
+        var matches: Set<Review> = []
+        getSearchTerms(text: searchText,
+                       language: Locale.current.languageCode)
+        { word in
+            if let founds = ReviewsManager.instance.searchTerms[word] {
+                matches.formUnion(founds)
+            }
+        }
+        reviews = matches.filter {baseReviews.contains($0) }
     }
-    reviews = matches.filter {baseReviews.contains($0) }
-  }
 
   func updateSearchResults(for searchController: UISearchController) {
     filterContent(searchText: searchController.searchBar.text!)
